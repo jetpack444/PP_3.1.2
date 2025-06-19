@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add New User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Светлый фон */
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: white; /* Белый фон для формы */
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center; /* Центрирование заголовка */
+            margin-bottom: 20px; /* Отступ снизу */
+        }
+        label {
+            font-weight: bold;
+        }
+        button {
+            width: 100%; /* Кнопка на всю ширину */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Add New User</h1>
+    <form th:align="center" th:action="@{/new}" th:object="${user}" method="POST">
+
+        <div class="form-group">
+            <label for="name"><b>Name</b></label>
+            <input th:name="name" th:type="text" class="form-control" id="name" required/>
+        </div>
+
+        <div class="form-group">
+            <label for="surname"><b>Surname</b></label>
+            <input th:name="surname" th:type="text" class="form-control" id="surname" required/>
+        </div>
+
+        <div class="form-group">
+            <label for="age"><b>Age</b></label>
+            <input th:name="age" th:type="number" class="form-control" id="age"/>
+        </div>
+
+        <div class="form-group">
+            <label for="email"><b>Email</b></label>
+            <input th:name="username" th:type="text" class="form-control" id="email" required/>
+        </div>
+
+        <div class="form-group">
+            <label for="password"><b>Password</b></label>
+            <input th:name="password" th:field="*{password}" th:type="password" class="form-control"
+                   id="password"/>
+        </div>
+
+        <label for="roles"><b>Role</b></label>
+        <select multiple class="form-control form-control-sm" id="roles" name="roleSet" size="2" required>
+            <option th:each="role: ${roleSet}" th:value="${role.name}" th:selected="${user.roleSet.contains(role)}">
+                <th:block th:text="${role.name}">
+                </th:block>
+            </option>
+        </select>
+        <br><br>
+        <br>
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </form>
+</div>
+
+</body>
+</html>
