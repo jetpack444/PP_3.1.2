@@ -21,11 +21,13 @@ import ru.kata.spring.boot_security.demo.securities.UserDetailsImpl;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     @Lazy
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         if (!Objects.equals(password, oldPassword)) {
-            user.setPassword(new BCryptPasswordEncoder().encode(password));
+            user.setPassword(passwordEncoder.encode(password));
         }
 
         userRepository.saveUser(user);
@@ -64,9 +66,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         Optional<User> user = userRepository.findByUsername(username);
 
         if (user.isEmpty()) {
@@ -79,6 +79,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void update(User user) {
+        String password = user.getPassword();
+        User existingUser = userRepository.getUser(user.getId());
+
+        if (existingUser != null && !Objects.equals(password, existingUser.getPassword())) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
         userRepository.update(user);
     }
 }
